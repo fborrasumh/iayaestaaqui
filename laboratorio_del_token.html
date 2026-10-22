@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laboratorio del token · ¿Cuánto cuesta pensar?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..900&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{--bg:#f4f1ea;--surface:#fbf9f4;--ink:#161922;--muted:#5b6170;--line:#ddd7ca;--amber:#a35f00;--blue:#1c64c4;--paper:#fffdf8;--grid:rgba(22,25,34,.10);color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10131c;--surface:#1a1f2d;--ink:#eef0f5;--muted:#9aa3b5;--line:#2a3040;--amber:#ffb547;--blue:#5aa9ff;--paper:#f6f1e4;--grid:rgba(238,240,245,.10);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10131c;--surface:#1a1f2d;--ink:#eef0f5;--muted:#9aa3b5;--line:#2a3040;--amber:#ffb547;--blue:#5aa9ff;--paper:#f6f1e4;--grid:rgba(238,240,245,.10);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+.wrap{max-width:1120px;margin:0 auto;padding:40px 20px 80px}
+h1{font-size:clamp(2.4rem,7vw,5rem);line-height:.98;letter-spacing:-.035em;margin:0 0 16px;font-weight:900;max-width:14ch}
+h2{font-size:clamp(1.5rem,3.4vw,2.2rem);letter-spacing:-.02em;margin:0 0 8px;line-height:1.1}
+p{max-width:68ch}
+.lede{font-size:1.15rem;color:var(--muted);margin:0 0 32px}
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:32px;align-items:start}
+@media (max-width:860px){.hero{grid-template-columns:1fr}}
+fieldset{border:0;padding:0;margin:0 0 22px}
+legend,label.l{font-weight:700;font-size:.95rem;display:block;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 14px;font:inherit;font-size:.92rem;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--amber);background:var(--amber);color:var(--bg);font-weight:700}
+select,input[type=number]{width:100%;font:inherit;font-size:1rem;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row{display:flex;gap:10px;align-items:center}
+input[type=range]{width:100%;accent-color:var(--amber)}
+.hint{color:var(--muted);font-size:.86rem;margin:6px 0 0}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+/* el ticket */
+.ticket{background:var(--paper);color:#1d1b16;font-family:"IBM Plex Mono",ui-monospace,monospace;padding:26px 24px 34px;border-radius:4px;position:sticky;top:20px;box-shadow:0 18px 40px rgba(0,0,0,.25);
+ -webkit-mask:radial-gradient(circle 7px at 50% 100%,transparent 98%,#000) 0 0/18px 100% repeat-x;mask:radial-gradient(circle 7px at 50% calc(100% + 1px),transparent 98%,#000) 0 0/18px 100% repeat-x}
+.ticket h3{font-family:Inter,sans-serif;font-size:1.05rem;text-align:center;margin:0 0 4px;letter-spacing:.02em}
+.ticket .sub{text-align:center;font-size:.8rem;color:#6b665a;margin:0 0 14px}
+.ln{display:flex;justify-content:space-between;gap:12px;font-size:.92rem;padding:3px 0}
+.ln span:last-child{text-align:right;white-space:nowrap}
+.dash{border-top:2px dashed #b9b2a2;margin:12px 0}
+.total{font-size:1.9rem;font-weight:600;display:flex;justify-content:space-between;align-items:baseline}
+.verdict{font-family:Inter,sans-serif;font-size:.95rem;margin-top:14px;padding:12px;border-radius:8px;background:#efe7d4}
+section.blk{margin-top:72px}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:20px}
+.cw{position:relative;height:420px}
+@media (max-width:600px){.cw{height:340px}}
+.tog{display:flex;gap:8px;margin:12px 0 16px;flex-wrap:wrap}
+.src{font-size:.85rem;color:var(--muted);margin-top:12px}
+.src a{color:var(--blue)}
+ol.refs{font-size:.9rem;color:var(--muted);padding-left:20px}
+footer{margin-top:72px;color:var(--muted);font-size:.9rem;border-top:1.5px solid var(--line);padding-top:20px}
+.themebtn{position:absolute;right:20px;top:calc(18px + env(safe-area-inset-top,0px));font:inherit;font-size:.85rem;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<button class="themebtn" id="theme" type="button">Cambiar tema</button>
+<div class="wrap">
+<h1>¿Cuánto cuesta pensar?</h1>
+<p class="lede">Elige una tarea y un modelo: el ticket te dice cuánto costaría por API key, cuántas veces al mes cabe en lo que cuesta una suscripción y por qué el modelo más caro no siempre es el que más gasta.</p>
+
+<div class="hero">
+ <div>
+  <fieldset>
+   <legend>Tarea</legend>
+   <div class="chips" id="presets" role="group" aria-label="Tareas de ejemplo"></div>
+   <p class="hint" id="presetHint"></p>
+  </fieldset>
+  <fieldset>
+   <label class="l" for="model">Modelo</label>
+   <select id="model"></select>
+  </fieldset>
+  <fieldset class="two">
+   <div><label class="l" for="tin">Tokens de entrada</label><input id="tin" type="number" min="0" step="500"><p class="hint">Lo que el modelo lee</p></div>
+   <div><label class="l" for="tout">Tokens de salida</label><input id="tout" type="number" min="0" step="100"><p class="hint">Lo que escribe y «piensa»</p></div>
+  </fieldset>
+  <fieldset>
+   <label class="l" for="times">Veces al mes: <span id="timesV"></span></label>
+   <input id="times" type="range" min="1" max="500" value="20">
+  </fieldset>
+  <fieldset>
+   <label class="row"><input type="checkbox" id="batch"> Procesar en lote (Batch API, −50 %, respuesta en horas)</label>
+  </fieldset>
+ </div>
+ <aside class="ticket" aria-live="polite">
+  <h3>LABORATORIO DEL TOKEN</h3>
+  <p class="sub" id="tdate"></p>
+  <div class="ln"><span id="tModel"></span><span></span></div>
+  <div class="ln"><span id="tInL"></span><span id="tIn"></span></div>
+  <div class="ln"><span id="tOutL"></span><span id="tOut"></span></div>
+  <div class="ln" id="tBatchRow"><span>Descuento lote</span><span id="tBatch"></span></div>
+  <div class="dash"></div>
+  <div class="ln"><span>Por tarea</span><span id="tTask"></span></div>
+  <div class="total"><span style="font-size:1rem">Al mes</span><span id="tMonth"></span></div>
+  <div class="dash"></div>
+  <div class="ln"><span>Con 20 $ (una suscripción)</span><span id="tFit"></span></div>
+  <div class="verdict" id="verdict"></div>
+ </aside>
+</div>
+
+<section class="blk">
+ <h2>El precio de la inteligencia, en dos curvas</h2>
+ <p>La capacidad de ayer se abarata a una velocidad sin precedentes; el mejor modelo de cada momento, en cambio, sigue costando dólares por millón de tokens. Toca un punto para ver el modelo.</p>
+ <div class="tog" role="group" aria-label="Serie">
+  <button class="chip" aria-pressed="true" data-s="both">Ambas</button>
+  <button class="chip" aria-pressed="false" data-s="fixed">Rendimiento constante (nivel GPT‑3.5)</button>
+  <button class="chip" aria-pressed="false" data-s="front">Modelos frontera (salida)</button>
+ </div>
+ <div class="card"><div class="cw"><canvas id="cPrice" aria-label="Evolución del precio por millón de tokens"></canvas></div></div>
+ <p class="src">Rendimiento constante: Epoch AI (2025) y Stanford AI Index 2025 (de 20 $ a 0,07 $ en 18 meses). Frontera: precios de lista de salida de OpenAI y Anthropic en su lanzamiento. Escala logarítmica.</p>
+</section>
+
+<section class="blk">
+ <h2>Lo que compran 20 $ por API</h2>
+ <p>El precio de una suscripción mensual convertido en tokens. Una novela son unos 75 000 tokens.</p>
+ <div class="tog" role="group" aria-label="Tipo de token">
+  <button class="chip" aria-pressed="true" data-k="out">Tokens de salida</button>
+  <button class="chip" aria-pressed="false" data-k="in">Tokens de entrada</button>
+ </div>
+ <div class="card"><div class="cw"><canvas id="c20" aria-label="Tokens que compran 20 dólares"></canvas></div></div>
+ <p class="src">Tarifas de lista por millón de tokens, octubre de 2026. DeepSeek: tarifa en horas valle.</p>
+</section>
+
+<section class="blk">
+ <h2>Tareas cada vez más largas</h2>
+ <p>Duración, en tiempo de un experto humano, de las tareas que un agente completa con un 50 % de éxito. Por encima de 16 horas, METR advierte de que su banco de tareas ya no mide con fiabilidad.</p>
+ <div class="card"><div class="cw"><canvas id="cMetr" aria-label="Horizonte temporal de METR"></canvas></div></div>
+ <p class="src">METR, Time Horizons v1.1 (2026). GPT‑3.5, GPT‑4 y o1, aproximados.</p>
+</section>
+
+<section class="blk">
+ <h2>Seis reglas para tu API key</h2>
+ <ol>
+  <li><b>Trátala como una tarjeta de crédito.</b> No la compartas ni la subas a GitHub.</li>
+  <li><b>Pon un límite de gasto</b> mensual y alertas en la consola del proveedor.</li>
+  <li><b>Una clave por proyecto</b>, para poder revocarla sin romper lo demás.</li>
+  <li><b>Modelo según la tarea:</b> barato por defecto, potente cuando haga falta.</li>
+  <li><b>Caché y lotes:</b> el modo batch rebaja un 50 %.</li>
+  <li><b>Mide coste por tarea</b>, no precio por token.</li>
+ </ol>
+</section>
+
+<footer>
+ <p>Complemento de la presentación «La IA ya está aquí», elaborada a partir de la ponencia de Jon Hernández (octubre de 2026). Precios orientativos: compruébalos en las páginas oficiales antes de presupuestar.</p>
+ <ol class="refs">
+  <li>Epoch AI (2025). LLM inference price trends.</li>
+  <li>Stanford HAI (2025). AI Index Report 2025.</li>
+  <li>ARC Prize Foundation (2024–2026). Resultados y costes de ARC‑AGI.</li>
+  <li>METR (2026). Time Horizons v1.1.</li>
+  <li>Anthropic y OpenAI. Páginas de precios de la API (consultadas en octubre de 2026).</li>
+ </ol>
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+(function(){
+const root=document.documentElement;
+try{const t=localStorage.getItem('lab-theme');if(t)root.dataset.theme=t;}catch(e){}
+document.getElementById('theme').onclick=()=>{const dark=getComputedStyle(root).colorScheme.includes('dark');root.dataset.theme=dark?'light':'dark';try{localStorage.setItem('lab-theme',root.dataset.theme)}catch(e){};redraw();};
+
+const MODELS=[
+ {n:'Claude Opus 5.5',i:4,o:20},{n:'Claude Fable 5.1',i:10,o:50},{n:'Claude Sonnet 5',i:3,o:15},{n:'Claude Haiku 4.5',i:1,o:5},
+ {n:'GPT‑5.6 Sol',i:5,o:30},{n:'GPT‑5.6 Terra',i:2,o:12},{n:'GPT‑4o mini',i:0.15,o:0.60},
+ {n:'Gemini 3.6 Flash',i:1.5,o:7.5},{n:'DeepSeek V4 Pro (valle)',i:0.44,o:0.88}];
+const PRESETS=[
+ {n:'Resumir esta charla',i:18000,o:1500,h:'67 minutos transcritos ≈ 12 800 palabras ≈ 18 000 tokens.'},
+ {n:'Revisar un TFG de 60 páginas',i:34000,o:3000,h:'Unas 24 000 palabras de entrada y un informe de revisión.'},
+ {n:'Traducir un artículo',i:11200,o:11200,h:'8 000 palabras: la salida pesa tanto como la entrada.'},
+ {n:'Contestar 50 correos',i:30000,o:10000,h:'Unos 600 tokens leídos y 200 escritos por correo.'},
+ {n:'Un agente trabajando 1 hora',i:2000000,o:100000,h:'Estimación: el agente relee su contexto en cada paso, por eso la entrada se dispara.'}];
+const $=id=>document.getElementById(id);
+const fmt$=v=>v>=100?v.toLocaleString('es-ES',{maximumFractionDigits:0})+' $':v>=1?v.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' $':v>=0.01?v.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:3})+' $':v.toLocaleString('es-ES',{maximumSignificantDigits:2})+' $';
+const fmtN=v=>v.toLocaleString('es-ES');
+MODELS.forEach((m,k)=>{const o=document.createElement('option');o.value=k;o.textContent=`${m.n} · ${String(m.i).replace('.',',')} $ / ${String(m.o).replace('.',',')} $ por millón`;$('model').appendChild(o)});
+let cur=0;
+PRESETS.forEach((p,k)=>{const b=document.createElement('button');b.className='chip';b.type='button';b.textContent=p.n;b.setAttribute('aria-pressed',k===0);b.onclick=()=>{cur=k;[...$('presets').children].forEach((c,j)=>c.setAttribute('aria-pressed',j===k));$('tin').value=p.i;$('tout').value=p.o;$('presetHint').textContent=p.h;calc()};$('presets').appendChild(b)});
+$('tin').value=PRESETS[0].i;$('tout').value=PRESETS[0].o;$('presetHint').textContent=PRESETS[0].h;
+$('tdate').textContent=new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
+['model','tin','tout','times','batch'].forEach(id=>$(id).addEventListener('input',calc));
+function calc(){
+ const m=MODELS[+$('model').value],ti=Math.max(0,+$('tin').value||0),to=Math.max(0,+$('tout').value||0),n=+$('times').value,b=$('batch').checked;
+ $('timesV').textContent=n;
+ const ci=ti*m.i/1e6,co=to*m.o/1e6,disc=b?-(ci+co)/2:0,task=ci+co+disc,month=task*n;
+ $('tModel').textContent=m.n;
+ $('tInL').textContent=`Entrada ${fmtN(ti)} tok`;$('tIn').textContent=fmt$(ci);
+ $('tOutL').textContent=`Salida ${fmtN(to)} tok`;$('tOut').textContent=fmt$(co);
+ $('tBatchRow').style.display=b?'flex':'none';$('tBatch').textContent=fmt$(disc);
+ $('tTask').textContent=fmt$(task);$('tMonth').textContent=fmt$(month);
+ const fit=task>0?Math.floor(20/task):Infinity;$('tFit').textContent=(fit===Infinity?'∞':fmtN(fit))+' veces';
+ const cheapest=MODELS.reduce((a,x)=>((ti*x.i+to*x.o)<(ti*a.i+to*a.o)?x:a));
+ const cheapTask=(ti*cheapest.i+to*cheapest.o)/1e6*(b?.5:1);
+ let v= month<20?`Al mes gastarías menos que una suscripción de 20 $.`:`Al mes superarías el precio de una suscripción: compara antes de elegir.`;
+ if(cheapest.n!==m.n) v+=` Con ${cheapest.n} costaría ${fmt$(cheapTask)} por tarea (${Math.round(task/cheapTask)}× menos), si la calidad te basta.`;
+ $('verdict').textContent=v;
+}
+calc();
+
+/* gráficos */
+const css=v=>getComputedStyle(root).getPropertyValue(v).trim();
+const FIXED=[[2021.9,60,'GPT‑3'],[2022.67,20,'GPT‑3 (rebaja)'],[2023.18,2,'GPT‑3.5 Turbo'],[2023.55,0.56,'Llama 2 13B'],[2023.92,0.20,'Llama 2 7B'],[2024.29,0.13,'Llama 2 7B'],[2024.56,0.10,'Llama 3.1 8B'],[2024.73,0.08,'Llama 3.2 3B'],[2024.76,0.07,'Gemini 1.5 Flash‑8B']];
+const FRONT=[[2023.2,60,'GPT‑4'],[2023.85,30,'GPT‑4 Turbo'],[2024.18,75,'Claude 3 Opus'],[2024.37,15,'GPT‑4o'],[2026.1,25,'Claude Opus 4.6'],[2026.44,50,'Claude Fable 5'],[2026.5,30,'GPT‑5.6 Sol'],[2026.72,20,'Claude Opus 5.5']];
+const METR=[[2022.9,1,'GPT‑3.5'],[2023.2,5,'GPT‑4'],[2024.7,40,'o1'],[2025.15,60,'Claude 3.7 Sonnet'],[2025.29,91,'o3'],[2025.6,137,'GPT‑5'],[2025.9,293,'Claude Opus 4.5'],[2026.13,384,'Gemini 3.1 Pro'],[2026.2,1045,'Claude Mythos Preview']];
+let charts=[],series='both',kind='out';
+function base(ylog,yfmt,xmin,xmax){const g=css('--grid'),t=css('--muted');return{responsive:true,maintainAspectRatio:false,animation:{duration:900},
+ plugins:{legend:{labels:{color:css('--ink'),font:{family:'Inter'}}},tooltip:{callbacks:{}}},
+ scales:{x:{type:'linear',min:xmin,max:xmax,grid:{color:g},ticks:{color:t,stepSize:1,callback:v=>Number.isInteger(v)?v:''}},
+ y:{type:ylog?'logarithmic':'linear',grid:{color:g},ticks:{color:t,callback:yfmt}}}}}
+function mk(id,cfg){const c=new Chart($(id),cfg);charts.push(c);return c}
+function redraw(){
+ if(!window.Chart)return;
+ charts.forEach(c=>c.destroy());charts=[];
+ const A=css('--amber'),B=css('--blue');
+ const ds=[];
+ if(series!=='front')ds.push({label:'Rendimiento constante (nivel GPT‑3.5)',data:FIXED.map(p=>({x:p[0],y:p[1],m:p[2]})),borderColor:B,backgroundColor:B,pointRadius:6,pointHoverRadius:9,borderWidth:3,tension:.15});
+ if(series!=='fixed')ds.push({label:'Modelos frontera (salida)',data:FRONT.map(p=>({x:p[0],y:p[1],m:p[2]})),borderColor:A,backgroundColor:A,pointRadius:6,pointHoverRadius:9,borderWidth:3,showLine:false});
+ const o1=base(true,v=>[0.1,1,10,100].includes(v)?(v+' $').replace('.',','):'',2021.6,2027);
+ o1.plugins.tooltip.callbacks.label=c=>`${c.raw.m}: ${String(c.raw.y).replace('.',',')} $ por millón`;
+ o1.scales.y.min=0.04;o1.scales.y.max=120;
+ mk('cPrice',{type:'line',data:{datasets:ds},options:o1});
+ const items=MODELS.map(m=>({n:m.n,v:20/(kind==='out'?m.o:m.i)})).sort((a,b)=>b.v-a.v);
+ mk('c20',{type:'bar',data:{labels:items.map(x=>x.n),datasets:[{label:'Millones de tokens por 20 $',data:items.map(x=>x.v),backgroundColor:items.map(x=>x.n.startsWith('Claude')?A:B),borderRadius:6}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:900},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.toLocaleString('es-ES',{maximumFractionDigits:2})} M tokens ≈ ${Math.round(c.raw*1e6/75000).toLocaleString('es-ES')} novelas`}}},
+  scales:{x:{type:'logarithmic',grid:{color:css('--grid')},ticks:{color:css('--muted'),callback:v=>[0.1,1,10,100].includes(v)?String(v).replace('.',',')+' M':''}},y:{grid:{display:false},ticks:{color:css('--ink'),font:{family:'Inter',weight:600}}}}}});
+ const o3=base(true,v=>({1:'1 min',10:'10 min',60:'1 h',480:'8 h',1440:'24 h'})[v]||'',2022.6,2026.5);
+ o3.scales.y.min=0.5;o3.scales.y.max=2500;o3.scales.y.afterBuildTicks=ax=>{ax.ticks=[1,10,60,480,1440].map(v=>({value:v}))};
+ o3.plugins.legend.display=false;o3.plugins.tooltip.callbacks.label=c=>{const v=c.raw.y;return `${c.raw.m}: ${v<60?v+' min':(v/60).toLocaleString('es-ES',{maximumFractionDigits:1})+' h'}${v>=960?' (≥16 h, medida poco fiable)':''}`};
+ mk('cMetr',{type:'line',data:{datasets:[{data:METR.map(p=>({x:p[0],y:p[1],m:p[2]})),borderColor:A,backgroundColor:A,pointRadius:6,pointHoverRadius:9,borderWidth:3,tension:.2}]},options:o3});
+}
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{series=b.dataset.s;document.querySelectorAll('[data-s]').forEach(x=>x.setAttribute('aria-pressed',x===b));redraw()});
+document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{kind=b.dataset.k;document.querySelectorAll('[data-k]').forEach(x=>x.setAttribute('aria-pressed',x===b));redraw()});
+if(window.Chart)redraw();else window.addEventListener('load',redraw);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redraw);
+})();
+</script>
+</body>
+</html>
